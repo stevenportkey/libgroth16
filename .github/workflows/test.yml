@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  build-and-test:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,12 +21,6 @@ jobs:
         profile: minimal
         toolchain: stable
         override: true
-
-    - name: Build
-      uses: actions-rs/cargo@v1
-      with:
-        command: build
-        args: --verbose
 
     - name: Run tests
       uses: actions-rs/cargo@v1
