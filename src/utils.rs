@@ -15,6 +15,7 @@ use std::fmt::{Debug, Display, Formatter};
 use std::fs::File;
 // use eyre::ContextCompat;
 use ark_ff::PrimeField;
+use crate::returncodes::ReturnCodes;
 
 pub struct ProvingContext {
     pub(crate) cfg: CircomConfig<Bn254>,
@@ -233,7 +234,7 @@ pub(crate) fn write_to_buffer(
         len_c_int
     } else {
         println!("required length is {}", len_c_int);
-        -1000
+        ReturnCodes::BufferTooSmall as i32
     }
 }
 

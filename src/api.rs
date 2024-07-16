@@ -2,6 +2,7 @@ use crate::utils::{
     do_prove, do_verify, load_context, ret_or_err, serialize, write_to_buffer, ProvingContext,
 };
 use std::ffi::CStr;
+use crate::returncodes::ReturnCodes;
 
 #[no_mangle]
 pub unsafe extern "C" fn verify_bn254(
@@ -12,14 +13,14 @@ pub unsafe extern "C" fn verify_bn254(
     let proving_output = unsafe { CStr::from_ptr(proving_output).to_str() };
     match (vk, proving_output) {
         (Ok(vk), Ok(proving_output)) => match do_verify(vk, proving_output) {
-            Ok(true) => 1,
-            Ok(false) => 0,
+            Ok(true) => ReturnCodes::VerificationSuccess as i32,
+            Ok(false) => ReturnCodes::VerificationFailed as i32,
             Err(err) => {
                 println!("{}", err);
-                -2
+                ReturnCodes::VerificationFailedWithError as i32
             }
         },
-        _ => -1,
+        _ => ReturnCodes::InvalidInput as i32,
     }
 }
 
@@ -47,7 +48,7 @@ pub extern "C" fn verifying_key_size_bn254(ctx: Option<&mut ProvingContext>) -> 
             let vk = ctx.verifying_key_in_hex();
             vk.len() as i32
         }
-        _ => -1,
+        _ => ReturnCodes::InvalidContext as i32,
     }
 }
 
@@ -62,7 +63,7 @@ pub extern "C" fn export_verifying_key_bn254(
             let vk = ctx.verifying_key_in_hex();
             write_to_buffer(&vk, buf, max_len)
         }
-        _ => -1,
+        _ => ReturnCodes::InvalidContext as i32,
     }
 }
 
@@ -78,11 +79,12 @@ pub unsafe extern "C" fn prove_bn254(
         (Some(ctx), Ok(input)) => match do_prove(ctx, input) {
             Ok((pub_inputs, proof)) => match serialize(pub_inputs, proof) {
                 Ok(output) => write_to_buffer(&output, buf, max_len),
-                Err(_) => -1,
+                Err(_) => ReturnCodes::SerializationFailed as i32,
             },
-            Err(_) => -1,
+            Err(_) => ReturnCodes::ProvingFailed as i32,
         },
-        _ => -1,
+        (None, _) => ReturnCodes::InvalidContext as i32,
+        _ => ReturnCodes::InvalidInput as i32,
     }
 }
 
