@@ -225,7 +225,7 @@ pub(crate) fn write_to_buffer(
     let src = output.as_bytes().as_ptr();
     let len = output.as_bytes().len();
     let len_c_int = len as cty::c_int;
-    if len_c_int <= max_len - 1 {
+    if len_c_int < max_len {
         unsafe {
             std::ptr::copy(src, buf as *mut u8, len);
             (*buf.add(len)) = 0;
