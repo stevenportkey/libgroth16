@@ -75,7 +75,6 @@ pub unsafe extern "C" fn prove_bn254(
     max_len: cty::c_int,
 ) -> cty::c_int {
     let input = unsafe { CStr::from_ptr(input).to_str() };
-    println!("input: {:?}", input);
     match (ctx, input) {
         (Some(ctx), Ok(input)) => match do_prove(ctx, input) {
             Ok((pub_inputs, proof)) => match serialize(pub_inputs, proof) {
@@ -135,13 +134,10 @@ mod test {
 
             // 2. Prove
             let input = &*b"{\"a\": [\"12\"], \"b\": [\"3\"]}\0".iter().map(|&b| b as i8).collect::<Vec<i8>>();
-            println!("input0: {:?}", input);
             let res = prove_bn254(Some(ctx_ref), input.as_ptr(), buffer.as_mut_ptr(), BUFFER_SIZE as i32);
-            println!("res: {:?}", res);
+            assert!(res >= 0);
             let output = decode_string(buffer.as_slice());
-            println!("{:?}", output);
             let output = serde_json::from_str::<ProvingOutput>(&output);
-            println!("{:?}", output);
             assert!(output.is_ok());
             assert_eq!(vec!["36"], output.as_ref().unwrap().public_inputs);
 
