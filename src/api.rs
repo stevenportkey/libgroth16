@@ -135,6 +135,7 @@ mod test {
 
             // 2. Prove
             let input = &*b"{\"a\": [\"12\"], \"b\": [\"3\"]}".iter().map(|&b| b as i8).collect::<Vec<i8>>();
+            println!("input0: {:?}", input);
             let res = prove_bn254(Some(ctx_ref), input.as_ptr(), buffer.as_mut_ptr(), BUFFER_SIZE as i32);
             println!("res: {:?}", res);
             let output = decode_string(buffer.as_slice());
