@@ -183,7 +183,7 @@ pub(crate) fn do_prove(
     let mut rng = thread_rng();
 
     let cs = ConstraintSystem::<<Bn254 as Pairing>::ScalarField>::new_ref();
-    circom.clone().generate_constraints(cs.clone()).context("failed to generate constraints")?;;
+    circom.clone().generate_constraints(cs.clone()).context("failed to generate constraints")?;
     let is_satisfied = cs.is_satisfied().context("constraints not satisfied")?;
     assert!(is_satisfied);
 
