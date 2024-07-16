@@ -183,8 +183,8 @@ pub(crate) fn do_prove(
     let mut rng = thread_rng();
 
     let cs = ConstraintSystem::<<Bn254 as Pairing>::ScalarField>::new_ref();
-    circom.clone().generate_constraints(cs.clone()).unwrap();
-    let is_satisfied = cs.is_satisfied().unwrap();
+    circom.clone().generate_constraints(cs.clone()).context("failed to generate constraints")?;;
+    let is_satisfied = cs.is_satisfied().context("constraints not satisfied")?;
     assert!(is_satisfied);
 
     let proof = Groth16::<Bn254, CircomReduction>::prove(&ctx.pk, circom, &mut rng)
