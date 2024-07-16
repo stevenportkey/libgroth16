@@ -137,6 +137,7 @@ mod test {
             let _ = prove_bn254(Some(ctx_ref), input.as_ptr(), buffer.as_mut_ptr(), BUFFER_SIZE as i32);
             let output = decode_string(buffer.as_slice());
             let output = serde_json::from_str::<ProvingOutput>(&output);
+            println!("{:?}", output);
             assert!(output.is_ok());
             assert_eq!(vec!["36"], output.as_ref().unwrap().public_inputs);
 
