@@ -68,31 +68,6 @@ impl Display for crate::utils::ParseError {
 
 impl std::error::Error for crate::utils::ParseError {}
 
-pub(crate) fn to_vec(vk: *const cty::c_char, vk_len: cty::c_int) -> Vec<u8> {
-    unsafe {
-        let mut res = Vec::new();
-        for i in 0..vk_len {
-            let byte = *vk.offset(i as isize);
-            res.push(byte as u8);
-        }
-        res
-    }
-}
-
-pub(crate) fn parse_input(
-    input: *const cty::c_char,
-    input_len: cty::c_int,
-) -> anyhow::Result<Vec<<Bn254 as Pairing>::ScalarField>> {
-    let mut inputs_vec = Vec::new();
-
-    for i in 0..((input_len / 32) as isize) {
-        let scalar_vec = unsafe { to_vec(input.offset(i * 32), 32) };
-        let scalar = <Bn254 as Pairing>::ScalarField::deserialize_compressed(&*scalar_vec)?;
-        inputs_vec.push(scalar);
-    }
-    Ok(inputs_vec)
-}
-
 pub(crate) fn do_verify(vk: &str, proving_output: &str) -> anyhow::Result<bool> {
     let vk = hex::decode(vk).context("failed to decode VerifyingKey")?;
     let proving_output: ProvingOutput =
@@ -252,7 +227,7 @@ pub(crate) fn serialize(
 
 #[cfg(test)]
 mod utils_test {
-    use crate::utils::{do_prove, do_verify, load_context, parse_proving_input, serialize};
+    use crate::utils::parse_proving_input;
     use itertools::Itertools;
 
     #[test]
