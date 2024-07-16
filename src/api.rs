@@ -75,6 +75,7 @@ pub unsafe extern "C" fn prove_bn254(
     max_len: cty::c_int,
 ) -> cty::c_int {
     let input = unsafe { CStr::from_ptr(input).to_str() };
+    println!("input: {:?}", input);
     match (ctx, input) {
         (Some(ctx), Ok(input)) => match do_prove(ctx, input) {
             Ok((pub_inputs, proof)) => match serialize(pub_inputs, proof) {
