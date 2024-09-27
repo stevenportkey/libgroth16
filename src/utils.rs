@@ -103,13 +103,12 @@ pub(crate) fn decode_public_input_array(
             Ok::<<Bn254 as Pairing>::ScalarField, ParseError>(scalar)
         })
         .collect();
-    let _ = match inputs.iter().any(|value| value.is_err()) {
-        true => Ok(0),
-        false => Err(ParseError {
+
+    if inputs.iter().any(|value| value.is_err()) {
+        return Err(ParseError {
             message: "parse error".to_string(),
-        }),
+        }.into());
     }
-        .context("failed to parse input");
 
     let inputs = inputs
         .iter()
@@ -227,8 +226,15 @@ pub(crate) fn serialize(
 
 #[cfg(test)]
 mod utils_test {
-    use crate::utils::parse_proving_input;
+    use crate::utils::decode_public_input_array;
+use crate::utils::parse_proving_input;
     use itertools::Itertools;
+
+    #[test]
+    fn test_decode(){
+        let res = decode_public_input_array(vec!["f1d8b6a46d50d66effc58fe80e03462f678bdf3b11df7b592731e8868d19bab9".to_string()]);
+        assert!(res.is_err());
+    }
 
     #[test]
     fn test_parse_proving_input() {
